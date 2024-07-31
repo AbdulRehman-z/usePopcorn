@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+@layer components {
+    .box-shadow {
+        @apply bg-base-200 shadow-lg rounded-md py-1 px-4;
+    }
+
+    .b-2 {
+        @apply border-2 border-red-200;
+    }
+}
