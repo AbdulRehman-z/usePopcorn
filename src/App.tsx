@@ -7,13 +7,13 @@ import Navbar from "./components/Navbar";
 import { Err, Loading } from "./components/Static";
 import WatchedMovies from "./components/WatchedMovies";
 import WatchedSummary from "./components/WatchedSummary";
-import { KEY } from "./constants";
-import { MovieDetails, moviesSchema, type Movies } from "./schema";
+import { useFetchMovies } from "./hooks/useFetchMovies";
+import { MovieDetails } from "./schema";
 
 function App() {
   const [query, setQuery] = useState("");
+  const { error, isLoading, movies } = useFetchMovies(query);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [movies, setMovies] = useState<Movies["Search"] | []>([]);
   const [watched, setWatched] = useState<MovieDetails[] | []>(() => {
     const watched = localStorage.getItem("watched");
     console.log("Initial watched", watched);
@@ -22,8 +22,6 @@ function App() {
     }
     return [];
   });
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
 
   function handleSelectedMovie(id: string) {
     setSelectedId(id);
@@ -55,49 +53,6 @@ function App() {
     localStorage.setItem("watched", JSON.stringify(watched));
   }, [watched]);
 
-  useEffect(
-    function () {
-      const controller = new AbortController();
-
-      async function fetchMovies() {
-        try {
-          const response = await fetch(
-            `https://www.omdbapi.com/?s=${query}&apikey=${KEY}`,
-            { signal: controller.signal },
-          );
-          const data = await response.json();
-          const validateData = moviesSchema.safeParse(data);
-          if (!validateData.success) {
-            throw new Error(JSON.stringify(validateData.error));
-          }
-          setMovies(data.Search);
-        } catch (error: any) {
-          if (error.name !== "AbortError") {
-            console.error(error);
-
-            setError(error.message);
-          }
-        } finally {
-          setError("");
-          setIsLoading(false);
-        }
-      }
-
-      if (query.length <= 3) {
-        setMovies([]);
-        setError("");
-        setIsLoading(false);
-        return;
-      }
-
-      fetchMovies();
-      return function () {
-        controller.abort();
-      };
-    },
-    [query],
-  );
-
   return (
     <div className="py-8">
       <Navbar
@@ -120,8 +75,6 @@ function App() {
         <Box>
           {selectedId ? (
             <MoviesDetails
-              setLoading={setIsLoading}
-              setError={setError}
               onClose={handleResetSelectedMovie}
               selectedId={selectedId}
               onAddWatched={handleAddWatched}
