@@ -5,8 +5,6 @@ import { Loading } from "./Static";
 
 type MoviesDetailsProps = {
   selectedId: string;
-  setError: React.Dispatch<React.SetStateAction<string>>;
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   onClose: () => void;
   onAddWatched: (movie: MovieDetails) => void;
 };
@@ -24,6 +22,7 @@ function MoviesDetails({
     onAddWatched(movieDetails);
     onClose();
   }
+
   useEffect(
     function () {
       function handleCallback(e: KeyboardEvent) {
@@ -40,10 +39,12 @@ function MoviesDetails({
     },
     [onClose],
   );
+
   useEffect(
     function () {
       async function fetchMovie() {
         try {
+          setIsLoading(true);
           const response = await fetch(
             `https://www.omdbapi.com/?i=${selectedId}&apikey=${KEY}`,
           );
