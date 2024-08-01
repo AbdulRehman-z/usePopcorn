@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Box from "./components/Box";
 import Layout from "./components/layout";
 import ListMovies from "./components/ListMovies";
@@ -8,21 +8,17 @@ import { Err, Loading } from "./components/Static";
 import WatchedMovies from "./components/WatchedMovies";
 import WatchedSummary from "./components/WatchedSummary";
 import { useFetchMovies } from "./hooks/useFetchMovies";
+import { useLocalStorageState } from "./hooks/useLocalStorageState";
 import { MovieDetails } from "./schema";
 
 function App() {
   const [query, setQuery] = useState("");
   const { error, isLoading, movies } = useFetchMovies(query);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [watched, setWatched] = useState<MovieDetails[] | []>(() => {
-    const watched = localStorage.getItem("watched");
-    console.log("Initial watched", watched);
-    if (watched) {
-      return JSON.parse(watched);
-    }
-    return [];
-  });
-
+  const [watched, setWatched] = useLocalStorageState(
+    [],
+    "watchedMovies",
+  );
   function handleSelectedMovie(id: string) {
     setSelectedId(id);
   }
@@ -48,10 +44,6 @@ function App() {
       return prev.filter((m) => m.imdbID !== id);
     });
   }
-
-  useEffect(() => {
-    localStorage.setItem("watched", JSON.stringify(watched));
-  }, [watched]);
 
   return (
     <div className="py-8">
