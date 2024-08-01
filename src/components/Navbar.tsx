@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
+import { useKey } from "../hooks/useKey";
 
 type NavbarProps = {
   query: string;
@@ -9,22 +10,11 @@ type NavbarProps = {
 function Navbar({ count, query, setQuery }: NavbarProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(
-    function () {
-      const callback = (e: KeyboardEvent) => {
-        if (document.activeElement === inputRef.current) return;
-
-        if (e.code === "Enter") {
-          inputRef.current?.focus();
-          setQuery("");
-        }
-      };
-
-      document.addEventListener("keydown", callback);
-      return () => document.removeEventListener("keydown", callback);
-    },
-    [setQuery],
-  );
+  useKey("Enter", function () {
+    if (document.activeElement === inputRef.current) return;
+    inputRef.current?.focus();
+    setQuery("");
+  });
 
   return (
     <div className="navbar box-shadow">

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { KEY } from "../constants";
+import { useKey } from "../hooks/useKey";
 import { movieDetailsSchema, type MovieDetails } from "../schema";
 import { Loading } from "./Static";
 
@@ -23,22 +24,24 @@ function MoviesDetails({
     onClose();
   }
 
-  useEffect(
-    function () {
-      function handleCallback(e: KeyboardEvent) {
-        if (e.code === "Escape") {
-          onClose();
-        }
-      }
+  useKey("Escape", onClose);
 
-      document.addEventListener("keydown", handleCallback);
+  // useEffect(
+  //   function () {
+  //     function handleCallback(e: KeyboardEvent) {
+  //       if (e.code === "Escape") {
+  //         onClose();
+  //       }
+  //     }
 
-      return function () {
-        document.removeEventListener("keydown", handleCallback);
-      };
-    },
-    [onClose],
-  );
+  //     document.addEventListener("keydown", handleCallback);
+
+  //     return function () {
+  //       document.removeEventListener("keydown", handleCallback);
+  //     };
+  //   },
+  //   [onClose],
+  // );
 
   useEffect(
     function () {
